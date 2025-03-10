@@ -107,53 +107,9 @@ const WhyCongrevia = () => {
                 </div>
               </div>
               <div className="mt-6">
-                <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700">
+                <Link to="/schedule" className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700">
                   Schedule Migration Consultation
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        {/* Superior Mobile Experience */}
-        <div className="bg-white rounded-xl shadow-md overflow-hidden mb-8">
-          <div className="md:flex">
-            <div className="md:flex-shrink-0 bg-purple-50 flex items-center justify-center md:w-48">
-              <FiSmartphone size={64} className="text-purple-500" />
-            </div>
-            <div className="p-8">
-              <div className="uppercase tracking-wide text-sm text-indigo-500 font-semibold">Mobile-First Design</div>
-              <h3 className="mt-1 text-xl font-semibold text-gray-900">Superior Mobile Experience</h3>
-              <p className="mt-2 text-gray-600">
-                Most church software has poor mobile interfaces. Congrevia is designed to be fully functional on any device, giving your team the freedom to manage ministry from anywhere.
-              </p>
-              <div className="mt-4 space-y-2">
-                <div className="flex items-center">
-                  <FiCheck size={18} className="text-green-500 mr-2" />
-                  <span className="text-gray-700">Fully responsive design works on any device</span>
-                </div>
-                <div className="flex items-center">
-                  <FiCheck size={18} className="text-green-500 mr-2" />
-                  <span className="text-gray-700">Native iOS and Android apps</span>
-                </div>
-                <div className="flex items-center">
-                  <FiCheck size={18} className="text-green-500 mr-2" />
-                  <span className="text-gray-700">Offline mode for when you're on the go</span>
-                </div>
-              </div>
-              <div className="mt-6 flex space-x-4">
-                <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-black hover:bg-gray-900">
-                  <svg className="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401z" />
-                  </svg>
-                  App Store
-                </button>
-                <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700">
-                  <svg className="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 2a8 8 0 100 16 8 8 0 000-16zM5.94 5.5c.944-.945 2.56-.276 2.56 1.06V10l5.5-5.5a8.049 8.049 0 00-5.5-2.015c-2.1 0-3.5 1.6-2.56 2.515z" clipRule="evenodd" />
-                  </svg>
-                  Google Play
-                </button>
+                </Link>
               </div>
             </div>
           </div>
@@ -186,24 +142,24 @@ const WhyCongrevia = () => {
                 </div>
               </div>
               <div className="mt-6">
-                <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700">
-                  <FiMessageSquare className="mr-2" size={16} />
-                  Chat with Support
-                </button>
+                <Link to="/help-support" className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700">
+                  <FiLifeBuoy className="mr-2" size={16} />
+                  Support
+                </Link>
               </div>
             </div>
           </div>
         </div>
         
         {/* Training Academy */}
-        <div className="bg-white rounded-xl shadow-md overflow-hidden">
+        <div className="bg-white rounded-xl shadow-md overflow-hidden mb-8">
           <div className="md:flex">
             <div className="md:flex-shrink-0 bg-yellow-50 flex items-center justify-center md:w-48">
               <FiBook size={64} className="text-yellow-500" />
             </div>
             <div className="p-8">
               <div className="uppercase tracking-wide text-sm text-indigo-500 font-semibold">Learn & Grow</div>
-              <h3 className="mt-1 text-xl font-semibold text-gray-900">Training Academy</h3>
+              <h3 className="mt-1 text-xl font-semibold text-gray-900">Training Academy <span className="ml-2 text-sm bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full">Coming Soon</span></h3>
               <p className="mt-2 text-gray-600">
                 Our comprehensive training resources ensure your team can maximize the platform's potential. From video tutorials to live webinars, we've got you covered.
               </p>
@@ -222,10 +178,44 @@ const WhyCongrevia = () => {
                 </div>
               </div>
               <div className="mt-6">
-                <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-yellow-600 hover:bg-yellow-700">
+                <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-yellow-600 hover:bg-yellow-700 opacity-75 cursor-not-allowed" disabled>
                   <FiBook className="mr-2" size={16} />
                   Explore Training Resources
                 </button>
+                <span className="block mt-2 text-xs text-gray-500 italic">Our training resources will be available soon</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        {/* Superior Mobile Experience */}
+        <div className="bg-white rounded-xl shadow-md overflow-hidden">
+          <div className="md:flex">
+            <div className="md:flex-shrink-0 bg-purple-50 flex items-center justify-center md:w-48">
+              <FiSmartphone size={64} className="text-purple-500" />
+            </div>
+            <div className="p-8">
+              <div className="uppercase tracking-wide text-sm text-indigo-500 font-semibold">Mobile-First Design</div>
+              <h3 className="mt-1 text-xl font-semibold text-gray-900">Superior Mobile Experience <span className="ml-2 text-sm bg-purple-100 text-purple-800 px-2 py-1 rounded-full">Coming Soon</span></h3>
+              <p className="mt-2 text-gray-600">
+                Most church software has poor mobile interfaces. Congrevia is designed to be fully functional on any device, giving your team the freedom to manage ministry from anywhere.
+              </p>
+              <div className="mt-4 space-y-2">
+                <div className="flex items-center">
+                  <FiCheck size={18} className="text-green-500 mr-2" />
+                  <span className="text-gray-700">Fully responsive design works on any device</span>
+                </div>
+                <div className="flex items-center">
+                  <FiCheck size={18} className="text-green-500 mr-2" />
+                  <span className="text-gray-700">Offline mode for when you're on the go</span>
+                </div>
+              </div>
+              <div className="mt-6 flex space-x-4">
+                <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-purple-600 hover:bg-purple-700 opacity-75 cursor-not-allowed" disabled>
+                  <FiSmartphone className="mr-2" size={16} />
+                  Try Mobile Experience
+                </button>
+                <span className="block mt-2 text-xs text-gray-500 italic">Our enhanced mobile experience will be available soon</span>
               </div>
             </div>
           </div>

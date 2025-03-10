@@ -32,6 +32,8 @@ const MinistryAnalytics = lazy(() => import('./pages/MinistryAnalytics'));
 const ChurchHealthAssessment = lazy(() => import('./pages/ChurchHealthAssessment'));
 const WhyCongrevia = lazy(() => import('./pages/WhyCongrevia'));
 const RecentActivities = lazy(() => import('./pages/RecentActivities'));
+const Schedule = lazy(() => import('./pages/Schedule'));
+const Support = lazy(() => import('./pages/Support'));
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -128,6 +130,7 @@ function App() {
                       <Route path="/church-health-assessment" element={<ChurchHealthAssessment />} />
                       <Route path="/why-congrevia" element={<WhyCongrevia />} />
                       <Route path="/recent-activities" element={<RecentActivities />} />
+                      <Route path="/schedule" element={<Schedule />} />
                     </Routes>
                   </ErrorBoundary>
                 </main>
@@ -135,7 +138,12 @@ function App() {
             </div>
           ) : (
             <Routes>
-              <Route path="*" element={<LandingPage onLogin={handleLogin} />} />
+              <Route path="/" element={<LandingPage onLogin={handleLogin} />} />
+              <Route path="/why-congrevia" element={<WhyCongrevia />} />
+              <Route path="/schedule" element={<Schedule />} />
+              <Route path="/support" element={<Support />} />
+              <Route path="/help-support" element={<HelpSupport />} />
+              <Route path="*" element={<Navigate to="/" />} />
             </Routes>
           )}
         </Suspense>
