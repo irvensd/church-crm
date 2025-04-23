@@ -24,11 +24,13 @@ const Navbar = ({ onLogout }) => {
   };
   
   const handleLogout = () => {
-    // This would be handled by your authentication system
-    console.log('Logging out...');
-    // Clear any user session data if needed
+    // Clear all user session data
     localStorage.removeItem('user');
     sessionStorage.removeItem('user');
+    localStorage.removeItem('church_crm_user');
+    localStorage.removeItem('church_crm_settings');
+    localStorage.removeItem('church_crm_recent_activities');
+    localStorage.removeItem('church_crm_preferences');
     
     // Call the onLogout function passed from App.js
     if (onLogout) {

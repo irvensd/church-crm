@@ -19,7 +19,8 @@ import {
   FiRefreshCw,
   FiAlertCircle,
   FiPlusCircle,
-  FiLock
+  FiLock,
+  FiMap
 } from 'react-icons/fi';
 import PageLayout from '../components/PageLayout';
 
@@ -30,7 +31,17 @@ const ChurchHealthAssessment = () => {
   
   // Sample data for the balanced scorecard
   const healthScores = {
-    spiritual: 78,
+    spiritual: {
+      overall: 78,
+      metrics: {
+        worshipAttendance: 85,
+        smallGroupParticipation: 72,
+        prayerLife: 68,
+        bibleStudy: 75,
+        serviceParticipation: 82,
+        spiritualGifts: 76
+      }
+    },
     organizational: 65,
     financial: 82,
     community: 71,
@@ -138,85 +149,268 @@ const ChurchHealthAssessment = () => {
   
   // Render the dashboard tab
   const renderDashboard = () => (
-    <div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-medium text-gray-800">Overall Health Score</h3>
-            <FiBarChart2 className="text-blue-500" size={20} />
-          </div>
-          <div className="flex items-center justify-center">
-            <div className="relative w-32 h-32">
-              <svg className="w-full h-full" viewBox="0 0 36 36">
-                <path
-                  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                  fill="none"
-                  stroke="#E5E7EB"
-                  strokeWidth="3"
-                  strokeDasharray="100, 100"
-                />
-                <path
-                  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                  fill="none"
-                  stroke="#4F46E5"
-                  strokeWidth="3"
-                  strokeDasharray="73, 100"
-                />
-                <text x="18" y="20.5" textAnchor="middle" fontSize="8" fill="#4F46E5" fontWeight="bold">73%</text>
-              </svg>
-            </div>
+    <div className="space-y-8 p-4">
+      {/* Overall Health Card */}
+      <div className="bg-white rounded-2xl shadow-sm p-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
+          <h2 className="text-2xl font-semibold text-gray-900">Overall Church Health</h2>
+          <div className="flex items-center mt-2 sm:mt-0">
+            <span className="text-gray-500">Last Updated:</span>
+            <span className="ml-2 font-medium text-gray-700">Today</span>
           </div>
         </div>
-        
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-medium text-gray-800">Benchmark Ranking</h3>
-            <FiTarget className="text-purple-500" size={20} />
-          </div>
-          <div className="flex items-center justify-center">
-            <div className="text-center">
-              <div className="text-4xl font-bold text-purple-600 mb-2">Top 15%</div>
-              <p className="text-sm text-gray-600">Among similar-sized churches</p>
-            </div>
-          </div>
-        </div>
-        
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-medium text-gray-800">Improvement Areas</h3>
-            <FiSliders className="text-amber-500" size={20} />
-          </div>
-          <ul className="space-y-3">
-            <li className="flex items-start">
-              <div className="flex-shrink-0 w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center text-amber-600 mr-3">
-                1
+
+        {/* Main Metrics */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+          {Object.entries(healthScores).map(([key, value]) => (
+            <div key={key} className="relative">
+              <div className="flex flex-col">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-lg font-medium text-gray-700 capitalize">{key}</span>
+                  <div className={`w-12 h-12 rounded-full flex items-center justify-center relative`} style={{
+                    background: `conic-gradient(${
+                      key === 'spiritual' ? '#3B82F6' : 
+                      key === 'organizational' ? '#8B5CF6' : 
+                      key === 'financial' ? '#10B981' : 
+                      key === 'community' ? '#EF4444' : 
+                      '#F59E0B'
+                    } ${typeof value === 'object' ? value.overall : value}%, #EEE ${typeof value === 'object' ? value.overall : value}% 100%)`
+                  }}>
+                    <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center">
+                      <span className="text-sm font-semibold" style={{
+                        color: key === 'spiritual' ? '#3B82F6' : 
+                               key === 'organizational' ? '#8B5CF6' : 
+                               key === 'financial' ? '#10B981' : 
+                               key === 'community' ? '#EF4444' : 
+                               '#F59E0B'
+                      }}>
+                        {typeof value === 'object' ? value.overall : value}%
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full rounded-full transition-all duration-500"
+                    style={{
+                      width: `${typeof value === 'object' ? value.overall : value}%`,
+                      backgroundColor: key === 'spiritual' ? '#3B82F6' : 
+                                     key === 'organizational' ? '#8B5CF6' : 
+                                     key === 'financial' ? '#10B981' : 
+                                     key === 'community' ? '#EF4444' : 
+                                     '#F59E0B'
+                    }}
+                  />
+                </div>
               </div>
-              <div>
-                <h4 className="font-medium text-gray-800">Discipleship Pathways</h4>
-                <p className="text-sm text-gray-600">Only 42% of members are in a growth track</p>
-              </div>
-            </li>
-          </ul>
+            </div>
+          ))}
         </div>
-      </div>
-      
-      <div className="bg-white rounded-lg shadow mb-8">
-        <div className="p-6 border-b border-gray-200">
-          <h3 className="text-lg font-medium text-gray-800">Balanced Scorecard</h3>
-          <p className="text-sm text-gray-600 mt-1">Measuring health across key dimensions</p>
-        </div>
-        <div className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-            {Object.entries(healthScores).map(([key, value]) => (
-              <div key={key} className={`bg-${key === 'spiritual' ? 'blue' : key === 'organizational' ? 'purple' : key === 'financial' ? 'green' : key === 'community' ? 'red' : 'amber'}-50 rounded-lg p-4 text-center`}>
-                <div className={`text-${key === 'spiritual' ? 'blue' : key === 'organizational' ? 'purple' : key === 'financial' ? 'green' : key === 'community' ? 'red' : 'amber'}-600 font-bold text-xl mb-1`}>{value}%</div>
-                <div className="text-sm font-medium text-gray-700 capitalize">{key}</div>
-                <div className="mt-2 h-1 w-full bg-gray-200 rounded-full overflow-hidden">
-                  <div className={`bg-${key === 'spiritual' ? 'blue' : key === 'organizational' ? 'purple' : key === 'financial' ? 'green' : key === 'community' ? 'red' : 'amber'}-600 h-full rounded-full`} style={{ width: `${value}%` }}></div>
+
+        {/* Spiritual Metrics Detail */}
+        <div className="mt-8">
+          <h3 className="text-lg font-medium text-gray-700 mb-4">Spiritual Health Metrics</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+            {Object.entries(healthScores.spiritual.metrics).map(([metric, score]) => (
+              <div key={metric} className="flex flex-col">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-sm text-gray-600">
+                    {metric.replace(/([A-Z])/g, ' $1').split(' ').map(word => 
+                      word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+                    ).join(' ')}
+                  </span>
+                  <span className="text-sm font-medium text-gray-900">{score}%</span>
+                </div>
+                <div className="flex-grow h-2 bg-gray-100 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-blue-500 rounded-full transition-all duration-500"
+                    style={{ width: `${score}%` }}
+                  />
                 </div>
               </div>
             ))}
           </div>
+        </div>
+      </div>
+
+      {/* Benchmark Comparison */}
+      <div className="bg-white rounded-2xl shadow-sm p-6">
+        <h3 className="text-xl font-semibold text-gray-900 mb-6">Benchmark Comparison</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {Object.entries(benchmarkData).map(([key, data]) => (
+            <div key={key} className="bg-gray-50 rounded-xl p-4">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-sm font-medium text-gray-600 capitalize">
+                  {key.replace(/([A-Z])/g, ' $1')}
+                </span>
+                <span className={`text-sm font-medium ${
+                  data.difference.startsWith('+') ? 'text-green-600' : 'text-red-600'
+                }`}>
+                  {data.difference}
+                </span>
+              </div>
+              <div className="flex items-end justify-between">
+                <div>
+                  <p className="text-2xl font-bold text-gray-900">{data.yourChurch}</p>
+                  <p className="text-xs text-gray-500 mt-1">Your Church</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-lg text-gray-600">{data.similarChurches}</p>
+                  <p className="text-xs text-gray-500 mt-1">Similar Churches</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Leadership & Culture Combined Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Leadership Alignment */}
+        <div className="bg-white rounded-2xl shadow-sm p-6">
+          <h3 className="text-xl font-semibold text-gray-900 mb-6">Leadership Alignment</h3>
+          <div className="space-y-4">
+            {Object.entries(leadershipAlignmentData).map(([key, value]) => (
+              <div key={key} className="bg-gray-50 rounded-xl p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium text-gray-700 capitalize">{key}</span>
+                  <span className="text-sm font-medium text-indigo-600">{value}%</span>
+                </div>
+                <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-indigo-500 rounded-full transition-all duration-500"
+                    style={{ width: `${value}%` }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Culture & Values */}
+        <div className="bg-white rounded-2xl shadow-sm p-6">
+          <h3 className="text-xl font-semibold text-gray-900 mb-6">Culture & Values</h3>
+          <div className="space-y-4">
+            {cultureValues.map((item) => (
+              <div key={item.value} className="bg-gray-50 rounded-xl p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium text-gray-700">{item.value}</span>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm font-medium text-gray-900">{item.actual}%</span>
+                    <span className="text-xs text-gray-500">/ {item.target}%</span>
+                  </div>
+                </div>
+                <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                  <div 
+                    className={`h-full rounded-full transition-all duration-500 ${
+                      item.actual >= item.target ? 'bg-green-500' : 
+                      item.actual >= item.target * 0.9 ? 'bg-yellow-500' : 
+                      'bg-red-500'
+                    }`}
+                    style={{ width: `${item.actual}%` }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+  
+  // Add new renderBenchmarks function
+  const renderBenchmarks = () => (
+    <div className="space-y-8 p-4">
+      {/* Benchmark Overview Card */}
+      <div className="bg-white rounded-2xl shadow-sm p-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
+          <div>
+            <h2 className="text-2xl font-semibold text-gray-900">Church Benchmarks</h2>
+            <p className="text-gray-600 mt-1">Compare your metrics with similar churches</p>
+          </div>
+          <div className="mt-4 sm:mt-0">
+            <select
+              className="block w-full sm:w-48 pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+              defaultValue="similar-size"
+            >
+              <option value="similar-size">Similar Size Churches</option>
+              <option value="same-denomination">Same Denomination</option>
+              <option value="same-region">Same Region</option>
+              <option value="national-avg">National Average</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {Object.entries(benchmarkData).map(([key, data]) => (
+            <div key={key} className="bg-gray-50 rounded-xl p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-medium text-gray-900 capitalize">
+                  {key.replace(/([A-Z])/g, ' $1')}
+                </h3>
+                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                  data.difference.startsWith('+') ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                }`}>
+                  {data.difference}
+                </span>
+              </div>
+              
+              <div className="mt-6 space-y-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium text-gray-500">Your Church</span>
+                  <span className="text-2xl font-bold text-gray-900">{data.yourChurch}</span>
+                </div>
+                <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                  <div 
+                    className={`h-full rounded-full ${
+                      data.difference.startsWith('+') ? 'bg-green-500' : 'bg-red-500'
+                    }`}
+                    style={{ 
+                      width: `${
+                        parseInt(data.yourChurch.replace(/[^0-9]/g, '')) / 
+                        (parseInt(data.similarChurches.replace(/[^0-9]/g, '')) * 1.5) * 100
+                      }%` 
+                    }}
+                  />
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium text-gray-500">Similar Churches</span>
+                  <span className="text-lg text-gray-600">{data.similarChurches}</span>
+                </div>
+              </div>
+
+              <div className="mt-4 pt-4 border-t border-gray-200">
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-gray-500">Percentile Ranking</span>
+                  <span className="font-medium text-indigo-600">
+                    {key === 'attendance' ? 'Top 15%' :
+                     key === 'giving' ? 'Top 10%' :
+                     key === 'volunteerEngagement' ? 'Top 25%' :
+                     key === 'newMembers' ? 'Top 20%' :
+                     'Top 45%'}
+                  </span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Trends Over Time */}
+      <div className="bg-white rounded-2xl shadow-sm p-6">
+        <h2 className="text-xl font-semibold text-gray-900 mb-6">Historical Trends</h2>
+        <div className="text-center text-gray-600 py-8">
+          <FiBarChart2 className="mx-auto h-12 w-12 text-gray-400" />
+          <p className="mt-2">Trend data visualization coming soon</p>
+        </div>
+      </div>
+
+      {/* Regional Comparison */}
+      <div className="bg-white rounded-2xl shadow-sm p-6">
+        <h2 className="text-xl font-semibold text-gray-900 mb-6">Regional Comparison</h2>
+        <div className="text-center text-gray-600 py-8">
+          <FiMap className="mx-auto h-12 w-12 text-gray-400" />
+          <p className="mt-2">Regional comparison data coming soon</p>
         </div>
       </div>
     </div>
@@ -360,7 +554,7 @@ const ChurchHealthAssessment = () => {
       
       {/* Tab content */}
       {activeTab === 'dashboard' && renderDashboard()}
-      {activeTab === 'benchmarks' && renderDashboard()}
+      {activeTab === 'benchmarks' && renderBenchmarks()}
       {activeTab === 'surveys' && renderDashboard()}
       {activeTab === 'leadership' && renderLeadership()}
       {activeTab === 'culture' && renderCulture()}

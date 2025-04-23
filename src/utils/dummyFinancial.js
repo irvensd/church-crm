@@ -5,17 +5,19 @@ export const generateDummyDonations = () => {
   const donations = [];
   const categories = ['tithe', 'offering', 'missions', 'building', 'youth', 'other'];
   const methods = ['cash', 'check', 'credit', 'online', 'bank transfer'];
+  const paymentProcessors = ['stripe', 'paypal', 'square'];
+  const funds = ['general', 'missions', 'building', 'youth', 'benevolence'];
   const donors = [
-    { name: 'John Smith', email: 'john.smith@example.com' },
-    { name: 'Sarah Johnson', email: 'sarah.j@example.com' },
-    { name: 'Michael Brown', email: 'mbrown@example.com' },
-    { name: 'Emily Davis', email: 'emily.davis@example.com' },
-    { name: 'David Wilson', email: 'dwilson@example.com' },
-    { name: 'Jennifer Taylor', email: 'jtaylor@example.com' },
-    { name: 'Robert Martinez', email: 'rmartinez@example.com' },
-    { name: 'Lisa Anderson', email: 'landerson@example.com' },
-    { name: 'James Thomas', email: 'jthomas@example.com' },
-    { name: 'Patricia White', email: 'pwhite@example.com' }
+    { name: 'John Smith', email: 'john.smith@example.com', memberId: 'member-1' },
+    { name: 'Sarah Johnson', email: 'sarah.j@example.com', memberId: 'member-2' },
+    { name: 'Michael Brown', email: 'mbrown@example.com', memberId: 'member-3' },
+    { name: 'Emily Davis', email: 'emily.davis@example.com', memberId: 'member-4' },
+    { name: 'David Wilson', email: 'dwilson@example.com', memberId: 'member-5' },
+    { name: 'Jennifer Taylor', email: 'jtaylor@example.com', memberId: 'member-6' },
+    { name: 'Robert Martinez', email: 'rmartinez@example.com', memberId: 'member-7' },
+    { name: 'Lisa Anderson', email: 'landerson@example.com', memberId: 'member-8' },
+    { name: 'James Thomas', email: 'jthomas@example.com', memberId: 'member-9' },
+    { name: 'Patricia White', email: 'pwhite@example.com', memberId: 'member-10' }
   ];
   
   // Generate 50 random donations
@@ -23,13 +25,32 @@ export const generateDummyDonations = () => {
     const donor = donors[Math.floor(Math.random() * donors.length)];
     const category = categories[Math.floor(Math.random() * categories.length)];
     const method = methods[Math.floor(Math.random() * methods.length)];
+    const paymentProcessor = paymentProcessors[Math.floor(Math.random() * paymentProcessors.length)];
     const amount = Math.floor(Math.random() * 1000) + 10; // Random amount between $10 and $1010
     const recurring = Math.random() > 0.7; // 30% chance of being recurring
+    const taxDeductible = Math.random() > 0.1; // 90% chance of being tax deductible
+    const receiptEmail = Math.random() > 0.2; // 80% chance of sending receipt email
+    const anonymous = Math.random() > 0.9; // 10% chance of being anonymous
+    const matchingGift = Math.random() > 0.8; // 20% chance of being a matching gift
     
     // Random date in the last 6 months
     const date = new Date();
     date.setMonth(date.getMonth() - Math.floor(Math.random() * 6));
     date.setDate(Math.floor(Math.random() * 28) + 1);
+    
+    // Generate splits for some donations
+    const splitDonation = Math.random() > 0.7; // 30% chance of being a split donation
+    let splits = [];
+    if (splitDonation) {
+      const numSplits = Math.floor(Math.random() * 3) + 1; // 1-3 splits
+      for (let j = 0; j < numSplits; j++) {
+        splits.push({
+          fund: funds[Math.floor(Math.random() * funds.length)],
+          amount: Math.floor(amount / numSplits),
+          percentage: Math.floor(100 / numSplits)
+        });
+      }
+    }
     
     donations.push({
       id: `donation-${i}`,
@@ -38,7 +59,15 @@ export const generateDummyDonations = () => {
       date: date.toISOString(),
       category,
       method,
+      paymentProcessor,
       recurring,
+      taxDeductible,
+      receiptEmail,
+      anonymous,
+      matchingGift,
+      matchingCompany: matchingGift ? 'Example Corp' : '',
+      splitDonation,
+      splits,
       notes: recurring ? 'Monthly recurring donation' : ''
     });
   }

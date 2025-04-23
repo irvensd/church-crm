@@ -16,11 +16,20 @@ import {
   FiCheck,
   FiAlertCircle,
   FiActivity,
-  FiDollarSign
+  FiDollarSign,
+  FiSearch,
+  FiPrinter
 } from 'react-icons/fi';
 import PageLayout from '../components/PageLayout';
+import PastoralCareModal from '../components/PastoralCareModal';
 
 const PastoralCare = () => {
+  const [activeTab, setActiveTab] = useState('visitation');
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [filterStatus, setFilterStatus] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
+
   // Sample care needs data
   const [careNeeds, setCareNeeds] = useState([
     {
@@ -212,244 +221,607 @@ const PastoralCare = () => {
   const careStats = getCareStats();
   const filteredCareNeeds = getFilteredCareNeeds();
   
-  return (
-    <PageLayout>
-      {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">Pastoral Care</h1>
-        <p className="text-gray-600 mt-1">Manage and prioritize congregational care needs</p>
-      </div>
-      
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-          <div className="flex items-center">
-            <div className="p-3 rounded-full bg-blue-100 text-blue-600 mr-4">
-              <FiUsers size={20} />
-            </div>
-            <div>
-              <p className="text-sm text-gray-500">Total Care Needs</p>
-              <h3 className="text-xl font-bold text-gray-800">{careStats.total}</h3>
-            </div>
-          </div>
-        </div>
+  // Add new state for prayer requests
+  const [prayerRequests, setPrayerRequests] = useState([
+    {
+      id: 1,
+      member: { id: 107, name: "Sarah Johnson", avatar: "SJ" },
+      request: "Healing for my mother's cancer",
+      isPrivate: true,
+      status: "active",
+      dateSubmitted: "2024-03-10T08:00:00Z",
+      updates: [
+        { date: "2024-03-12T10:00:00Z", note: "Started new treatment" }
+      ]
+    }
+  ]);
+
+  // Add new state for counseling sessions
+  const [counselingSessions, setCounselingSessions] = useState([
+    {
+      id: 1,
+      member: { id: 108, name: "Michael Brown", avatar: "MB" },
+      type: "Marriage",
+      nextSession: "2024-03-15T14:00:00Z",
+      status: "ongoing",
+      notes: "Working on communication issues",
+      history: [
+        { date: "2024-03-01T14:00:00Z", notes: "Initial session" }
+      ]
+    }
+  ]);
+
+  // Add new state for visitation schedule
+  const [visitationSchedule, setVisitationSchedule] = useState([
+    {
+      id: 1,
+      member: { id: 109, name: "Elizabeth White", avatar: "EW" },
+      type: "Hospital",
+      date: "2024-03-14T10:00:00Z",
+      location: "Memorial Hospital, Room 302",
+      status: "scheduled",
+      notes: "Pre-surgery visit"
+    }
+  ]);
+
+  // Add new state for care teams
+  const [careTeams, setCareTeams] = useState([
+    {
+      id: 1,
+      name: 'Hospital Visitation Team',
+      leader: 'Deacon John',
+      members: ['Sarah B.', 'Michael R.', 'Rachel T.'],
+      assignments: [
+        { memberName: 'Sarah Johnson', date: '2024-03-25' }
+      ]
+    },
+    {
+      id: 2,
+      name: 'Prayer Warriors',
+      leader: 'Elder Mary',
+      members: ['David L.', 'Susan M.', 'James P.'],
+      assignments: [
+        { memberName: 'David Thompson', date: '2024-03-22' }
+      ]
+    }
+  ]);
+
+  // Modal state
+  const [showModal, setShowModal] = useState(false);
+  const [modalType, setModalType] = useState('');
+  const [modalMode, setModalMode] = useState('add');
+
+  // Handle add new item
+  const handleAddNew = (type) => {
+    setModalType(type);
+    setModalMode('add');
+    setSelectedItem(null);
+    setShowModal(true);
+  };
+
+  // Handle edit item
+  const handleEdit = (type, item) => {
+    setModalType(type);
+    setModalMode('edit');
+    setSelectedItem(item);
+    setShowModal(true);
+  };
+
+  // Handle delete item
+  const handleDelete = (type, id) => {
+    if (window.confirm('Are you sure you want to delete this item?')) {
+      switch (type) {
+        case 'visitation':
+          setVisitationSchedule(prev => prev.filter(item => item.id !== id));
+          break;
+        case 'prayer':
+          setPrayerRequests(prev => prev.filter(item => item.id !== id));
+          break;
+        case 'counseling':
+          setCounselingSessions(prev => prev.filter(item => item.id !== id));
+          break;
+        case 'teams':
+          setCareTeams(prev => prev.filter(item => item.id !== id));
+          break;
+        default:
+          break;
+      }
+    }
+  };
+
+  // Handle form submission
+  const handleSubmit = (formData) => {
+    const newId = Date.now(); // Simple ID generation
+    
+    switch (modalType) {
+      case 'visitation':
+        if (modalMode === 'edit') {
+          setVisitationSchedule(prev => prev.map(item => 
+            item.id === selectedItem.id ? { ...formData, id: item.id } : item
+          ));
+        } else {
+          setVisitationSchedule(prev => [...prev, { ...formData, id: newId }]);
+        }
+        break;
         
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-          <div className="flex items-center">
-            <div className="p-3 rounded-full bg-red-100 text-red-600 mr-4">
-              <FiAlertCircle size={20} />
-            </div>
-            <div>
-              <p className="text-sm text-gray-500">High Priority</p>
-              <h3 className="text-xl font-bold text-gray-800">{careStats.highPriority}</h3>
-            </div>
-          </div>
-        </div>
+      case 'prayer':
+        if (modalMode === 'edit') {
+          setPrayerRequests(prev => prev.map(item =>
+            item.id === selectedItem.id ? { ...formData, id: item.id } : item
+          ));
+        } else {
+          setPrayerRequests(prev => [...prev, { ...formData, id: newId }]);
+        }
+        break;
         
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-          <div className="flex items-center">
-            <div className="p-3 rounded-full bg-yellow-100 text-yellow-600 mr-4">
-              <FiClock size={20} />
-            </div>
-            <div>
-              <p className="text-sm text-gray-500">Pending</p>
-              <h3 className="text-xl font-bold text-gray-800">{careStats.pending}</h3>
-            </div>
-          </div>
-        </div>
+      case 'counseling':
+        if (modalMode === 'edit') {
+          setCounselingSessions(prev => prev.map(item =>
+            item.id === selectedItem.id ? { ...formData, id: item.id } : item
+          ));
+        } else {
+          setCounselingSessions(prev => [...prev, { ...formData, id: newId }]);
+        }
+        break;
         
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-          <div className="flex items-center">
-            <div className="p-3 rounded-full bg-indigo-100 text-indigo-600 mr-4">
-              <FiActivity size={20} />
-            </div>
-            <div>
-              <p className="text-sm text-gray-500">In Progress</p>
-              <h3 className="text-xl font-bold text-gray-800">{careStats.inProgress}</h3>
-            </div>
-          </div>
-        </div>
+      case 'teams':
+        if (modalMode === 'edit') {
+          setCareTeams(prev => prev.map(item =>
+            item.id === selectedItem.id ? { ...formData, id: item.id } : item
+          ));
+        } else {
+          setCareTeams(prev => [...prev, { ...formData, id: newId }]);
+        }
+        break;
         
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-          <div className="flex items-center">
-            <div className="p-3 rounded-full bg-green-100 text-green-600 mr-4">
-              <FiCheck size={20} />
-            </div>
-            <div>
-              <p className="text-sm text-gray-500">Completed</p>
-              <h3 className="text-xl font-bold text-gray-800">{careStats.completed}</h3>
-            </div>
+      default:
+        break;
+    }
+    
+    setShowModal(false);
+  };
+
+  // Handle print
+  const handlePrint = () => {
+    window.print();
+  };
+
+  // Add new component for Prayer Requests
+  const renderPrayerRequests = () => (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-4">
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Search requests..."
+              className="pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            <FiSearch className="absolute left-3 top-3 text-gray-400" />
           </div>
-        </div>
-      </div>
-      
-      {/* Actions and Filters */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-        <div className="flex space-x-2">
-          <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md flex items-center">
-            <FiPlus className="mr-2" />
-            New Care Need
-          </button>
-          <button className="bg-white hover:bg-gray-50 text-gray-600 px-4 py-2 rounded-md border border-gray-300 flex items-center">
-            <FiFilter className="mr-2" />
-            Filter
-          </button>
-        </div>
-        
-        <div className="flex space-x-2">
           <select
-            value={priorityFilter}
-            onChange={(e) => setPriorityFilter(e.target.value)}
-            className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="all">All Priorities</option>
-            <option value="high">High Priority</option>
-            <option value="medium">Medium Priority</option>
-            <option value="low">Low Priority</option>
-          </select>
-          
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="all">All Statuses</option>
-            <option value="pending">Pending</option>
-            <option value="in-progress">In Progress</option>
-            <option value="completed">Completed</option>
-          </select>
-          
-          <select
-            value={categoryFilter}
-            onChange={(e) => setCategoryFilter(e.target.value)}
-            className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value)}
+            className="border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500"
           >
             <option value="all">All Categories</option>
-            <option value="hospital">Hospital</option>
-            <option value="bereavement">Bereavement</option>
-            <option value="homebound">Homebound</option>
-            <option value="spiritual">Spiritual</option>
-            <option value="financial">Financial</option>
-            <option value="other">Other</option>
+            <option value="Health">Health</option>
+            <option value="Family">Family</option>
+            <option value="Spiritual">Spiritual</option>
+            <option value="Other">Other</option>
           </select>
         </div>
-      </div>
-      
-      {/* Care Needs List */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden mb-6">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Member
-                </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Category
-                </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Priority
-                </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
-                </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Assigned To
-                </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Last Contact
-                </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {filteredCareNeeds.map((need) => (
-                <tr key={need.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-medium">
-                        {need.member.avatar}
-                      </div>
-                      <div className="ml-4">
-                        <div className="text-sm font-medium text-gray-900">{need.member.name}</div>
-                        <div className="text-sm text-gray-500 flex items-center">
-                          <FiPhone size={12} className="mr-1" />
-                          {need.member.phone}
-                        </div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <span className="p-1 rounded-full bg-gray-100 text-gray-600 mr-2">
-                        {getCategoryIcon(need.category)}
-                      </span>
-                      <span className="text-sm text-gray-900">{getCategoryLabel(need.category)}</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`px-2 py-1 text-xs rounded-full border ${getPriorityColor(need.priority)}`}>
-                      {need.priority.charAt(0).toUpperCase() + need.priority.slice(1)}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`px-2 py-1 text-xs rounded-full border ${getStatusColor(need.status)}`}>
-                      {need.status === 'in-progress' ? 'In Progress' : 
-                       need.status.charAt(0).toUpperCase() + need.status.slice(1)}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-medium">
-                        {need.assignedTo.avatar}
-                      </div>
-                      <div className="ml-2 text-sm text-gray-900">{need.assignedTo.name}</div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {timeAgo(need.lastContact)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <button className="text-blue-600 hover:text-blue-900 mr-3">
-                      <FiEdit2 size={16} />
-                    </button>
-                    <button className="text-red-600 hover:text-red-900">
-                      <FiTrash2 size={16} />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        
-        {filteredCareNeeds.length === 0 && (
-          <div className="text-center py-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 text-gray-400 mb-4">
-              <FiHeart size={32} />
-            </div>
-            <h3 className="text-lg font-medium text-gray-800 mb-1">No care needs found</h3>
-            <p className="text-gray-500">
-              {statusFilter !== 'all' || priorityFilter !== 'all' || categoryFilter !== 'all'
-                ? "Try adjusting your filters to see more results."
-                : "There are no care needs to display. Add a new care need to get started."}
-            </p>
-          </div>
-        )}
-      </div>
-      
-      {/* Premium Badge */}
-      <div className="mt-8 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-lg p-4 text-white flex items-center justify-between">
-        <div>
-          <h3 className="font-bold text-lg">Premium Feature</h3>
-          <p className="opacity-90">Pastoral Care Dashboard is a premium feature. Upgrade your plan for full access.</p>
-        </div>
-        <button className="bg-white text-indigo-600 px-4 py-2 rounded-md font-medium hover:bg-opacity-90">
-          Upgrade
+        <button
+          onClick={() => handleAddNew('prayer')}
+          className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
+        >
+          <FiPlus className="mr-2" />
+          New Request
         </button>
       </div>
+
+      <div className="bg-white shadow overflow-hidden sm:rounded-md">
+        <ul className="divide-y divide-gray-200">
+          {prayerRequests.map((request) => (
+            <li key={request.id}>
+              <div className="px-4 py-4 sm:px-6 hover:bg-gray-50">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <div className="flex-shrink-0 h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center">
+                      <FiHeart className="h-5 w-5 text-purple-600" />
+                    </div>
+                    <div className="ml-4">
+                      <div className="flex items-center">
+                        <h4 className="text-sm font-medium text-gray-900">{request.memberName}</h4>
+                        {request.isConfidential && (
+                          <span className="ml-2 px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
+                            Confidential
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-sm text-gray-500">{request.request}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-4">
+                    <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                      {request.category}
+                    </span>
+                    <div className="flex items-center space-x-2">
+                      <button 
+                        onClick={() => handleEdit('prayer', request)}
+                        className="p-1 text-gray-400 hover:text-gray-500"
+                      >
+                        <FiEdit2 size={16} />
+                      </button>
+                      <button 
+                        onClick={() => handleDelete('prayer', request.id)}
+                        className="p-1 text-gray-400 hover:text-red-500"
+                      >
+                        <FiTrash2 size={16} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                {request.updates && request.updates.length > 0 && (
+                  <div className="mt-2">
+                    <h5 className="text-sm font-medium text-gray-700">Updates:</h5>
+                    <ul className="mt-1 space-y-1">
+                      {request.updates.map((update, index) => (
+                        <li key={index} className="text-sm text-gray-500">
+                          {update.date}: {update.note}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+
+  // Add new component for Counseling Sessions
+  const renderCounselingSessions = () => (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-4">
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Search sessions..."
+              className="pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            <FiSearch className="absolute left-3 top-3 text-gray-400" />
+          </div>
+          <select
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value)}
+            className="border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500"
+          >
+            <option value="all">All Types</option>
+            <option value="Marriage">Marriage</option>
+            <option value="Personal">Personal</option>
+            <option value="Family">Family</option>
+            <option value="Grief">Grief</option>
+          </select>
+        </div>
+        <button
+          onClick={() => handleAddNew('counseling')}
+          className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
+        >
+          <FiPlus className="mr-2" />
+          New Session
+        </button>
+      </div>
+
+      <div className="bg-white shadow overflow-hidden sm:rounded-md">
+        <ul className="divide-y divide-gray-200">
+          {counselingSessions.map((session) => (
+            <li key={session.id}>
+              <div className="px-4 py-4 sm:px-6 hover:bg-gray-50">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <div className="flex-shrink-0 h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+                      <FiMessageSquare className="h-5 w-5 text-blue-600" />
+                    </div>
+                    <div className="ml-4">
+                      <h4 className="text-sm font-medium text-gray-900">{session.memberName}</h4>
+                      <p className="text-sm text-gray-500">{session.counselingType} Counseling - {session.nextSession}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-4">
+                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                      session.status === 'completed' ? 'bg-green-100 text-green-800' :
+                      session.status === 'scheduled' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'
+                    }`}>
+                      {session.status}
+                    </span>
+                    <div className="flex items-center space-x-2">
+                      <button 
+                        onClick={() => handleEdit('counseling', session)}
+                        className="p-1 text-gray-400 hover:text-gray-500"
+                      >
+                        <FiEdit2 size={16} />
+                      </button>
+                      <button 
+                        onClick={() => handleDelete('counseling', session.id)}
+                        className="p-1 text-gray-400 hover:text-red-500"
+                      >
+                        <FiTrash2 size={16} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-2">
+                  <div className="text-sm text-gray-500">
+                    <span className="font-medium">Notes:</span> {session.notes}
+                  </div>
+                </div>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+
+  // Add new component for Visitation Schedule
+  const renderVisitationSchedule = () => (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-4">
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Search visits..."
+              className="pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            <FiSearch className="absolute left-3 top-3 text-gray-400" />
+          </div>
+          <select
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value)}
+            className="border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500"
+          >
+            <option value="all">All Status</option>
+            <option value="scheduled">Scheduled</option>
+            <option value="completed">Completed</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </div>
+        <div className="flex items-center space-x-3">
+          <button
+            onClick={() => handleAddNew('visitation')}
+            className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
+          >
+            <FiPlus className="mr-2" />
+            New Visit
+          </button>
+          <button 
+            onClick={handlePrint}
+            className="p-2 text-gray-400 hover:text-gray-500"
+          >
+            <FiPrinter size={20} />
+          </button>
+        </div>
+      </div>
+
+      <div className="bg-white shadow overflow-hidden sm:rounded-md">
+        <ul className="divide-y divide-gray-200">
+          {visitationSchedule.map((visit) => (
+            <li key={visit.id}>
+              <div className="px-4 py-4 sm:px-6 hover:bg-gray-50">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <div className={`flex-shrink-0 h-10 w-10 rounded-full flex items-center justify-center ${
+                      visit.priority === 'high' ? 'bg-red-100' :
+                      visit.priority === 'medium' ? 'bg-yellow-100' : 'bg-green-100'
+                    }`}>
+                      <FiCalendar className={`h-5 w-5 ${
+                        visit.priority === 'high' ? 'text-red-600' :
+                        visit.priority === 'medium' ? 'text-yellow-600' : 'text-green-600'
+                      }`} />
+                    </div>
+                    <div className="ml-4">
+                      <h4 className="text-sm font-medium text-gray-900">{visit.member.name}</h4>
+                      <p className="text-sm text-gray-500">{visit.type} Visit - {visit.date}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-4">
+                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                      visit.status === 'completed' ? 'bg-green-100 text-green-800' :
+                      visit.status === 'scheduled' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'
+                    }`}>
+                      {visit.status}
+                    </span>
+                    <div className="flex items-center space-x-2">
+                      <button 
+                        onClick={() => handleEdit('visitation', visit)}
+                        className="p-1 text-gray-400 hover:text-gray-500"
+                      >
+                        <FiEdit2 size={16} />
+                      </button>
+                      <button 
+                        onClick={() => handleDelete('visitation', visit.id)}
+                        className="p-1 text-gray-400 hover:text-red-500"
+                      >
+                        <FiTrash2 size={16} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-2">
+                  <div className="text-sm text-gray-500">
+                    <span className="font-medium">Location:</span> {visit.location}
+                  </div>
+                  {visit.notes && (
+                    <div className="mt-1 text-sm text-gray-500">
+                      <span className="font-medium">Notes:</span> {visit.notes}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+
+  // Add new component for Care Teams
+  const renderCareTeams = () => (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div className="relative">
+          <input
+            type="text"
+            placeholder="Search teams..."
+            className="pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          <FiSearch className="absolute left-3 top-3 text-gray-400" />
+        </div>
+        <button
+          onClick={() => handleAddNew('teams')}
+          className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
+        >
+          <FiPlus className="mr-2" />
+          New Team
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+        {careTeams.map((team) => (
+          <div key={team.id} className="bg-white shadow rounded-lg p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-medium text-gray-900">{team.teamName}</h3>
+              <div className="flex items-center space-x-2">
+                <button 
+                  onClick={() => handleEdit('teams', team)}
+                  className="p-1 text-gray-400 hover:text-gray-500"
+                >
+                  <FiEdit2 size={16} />
+                </button>
+                <button 
+                  onClick={() => handleDelete('teams', team.id)}
+                  className="p-1 text-gray-400 hover:text-red-500"
+                >
+                  <FiTrash2 size={16} />
+                </button>
+              </div>
+            </div>
+            <div className="space-y-3">
+              <div>
+                <h4 className="text-sm font-medium text-gray-700">Team Leader</h4>
+                <p className="text-sm text-gray-500">{team.leader}</p>
+              </div>
+              <div>
+                <h4 className="text-sm font-medium text-gray-700">Team Members</h4>
+                <div className="mt-1 flex flex-wrap gap-2">
+                  {team.members.map((member, index) => (
+                    <span key={index} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                      {member}
+                    </span>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <h4 className="text-sm font-medium text-gray-700">Current Assignments</h4>
+                <ul className="mt-1 space-y-1">
+                  {team.assignments && team.assignments.map((assignment, index) => (
+                    <li key={index} className="text-sm text-gray-500">
+                      {assignment.memberName} - {assignment.date}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  return (
+    <PageLayout>
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-gray-900">Pastoral Care</h1>
+        <p className="mt-1 text-sm text-gray-500">
+          Manage visitation schedules, prayer requests, counseling sessions, and care teams
+        </p>
+      </div>
+
+      <div className="mb-6">
+        <nav className="flex space-x-4" aria-label="Tabs">
+          <button
+            onClick={() => setActiveTab('visitation')}
+            className={`px-3 py-2 text-sm font-medium rounded-md ${
+              activeTab === 'visitation'
+                ? 'bg-indigo-100 text-indigo-700'
+                : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            <FiCalendar className="inline-block mr-2" />
+            Visitation Schedule
+          </button>
+          <button
+            onClick={() => setActiveTab('prayer')}
+            className={`px-3 py-2 text-sm font-medium rounded-md ${
+              activeTab === 'prayer'
+                ? 'bg-indigo-100 text-indigo-700'
+                : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            <FiHeart className="inline-block mr-2" />
+            Prayer Requests
+          </button>
+          <button
+            onClick={() => setActiveTab('counseling')}
+            className={`px-3 py-2 text-sm font-medium rounded-md ${
+              activeTab === 'counseling'
+                ? 'bg-indigo-100 text-indigo-700'
+                : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            <FiMessageSquare className="inline-block mr-2" />
+            Counseling
+          </button>
+          <button
+            onClick={() => setActiveTab('teams')}
+            className={`px-3 py-2 text-sm font-medium rounded-md ${
+              activeTab === 'teams'
+                ? 'bg-indigo-100 text-indigo-700'
+                : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            <FiUsers className="inline-block mr-2" />
+            Care Teams
+          </button>
+        </nav>
+      </div>
+
+      {activeTab === 'visitation' && renderVisitationSchedule()}
+      {activeTab === 'prayer' && renderPrayerRequests()}
+      {activeTab === 'counseling' && renderCounselingSessions()}
+      {activeTab === 'teams' && renderCareTeams()}
+
+      <PastoralCareModal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        onSubmit={handleSubmit}
+        type={modalType}
+        initialData={selectedItem}
+        mode={modalMode}
+      />
     </PageLayout>
   );
 };

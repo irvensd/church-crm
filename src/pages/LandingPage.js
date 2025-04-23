@@ -25,8 +25,7 @@ const LandingPage = ({ onLogin }) => {
 
   const handleLogin = (e) => {
     e.preventDefault();
-    if (onLogin) onLogin();
-    navigate('/dashboard');
+    navigate('/login');
   };
 
   const handleSignup = (e) => {

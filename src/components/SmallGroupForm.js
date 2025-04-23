@@ -25,6 +25,7 @@ const SmallGroupForm = ({ group, onSave, onCancel }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [availableMembers, setAvailableMembers] = useState([]);
   const [memberSearchQuery, setMemberSearchQuery] = useState('');
+  const [showLeaderSearch, setShowLeaderSearch] = useState(false);
   const [showMemberSearch, setShowMemberSearch] = useState(false);
 
   // Group types
@@ -116,6 +117,7 @@ const SmallGroupForm = ({ group, onSave, onCancel }) => {
       members: [...formData.members, member]
     });
     setMemberSearchQuery('');
+    setShowMemberSearch(false);
   };
 
   // Remove member from group
@@ -143,7 +145,7 @@ const SmallGroupForm = ({ group, onSave, onCancel }) => {
     });
     
     setMemberSearchQuery('');
-    setShowMemberSearch(false);
+    setShowLeaderSearch(false);
   };
 
   // Validate form
@@ -171,29 +173,49 @@ const SmallGroupForm = ({ group, onSave, onCancel }) => {
     } else if (!/\S+@\S+\.\S+/.test(formData.leader.email)) {
       newErrors.leaderEmail = 'Invalid email format';
     }
+
+    // Ensure leader has an ID
+    if (!formData.leader.id) {
+      newErrors.leaderName = 'Please select a leader from the member list';
+    }
     
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     if (validateForm()) {
       setIsSubmitting(true);
       
-      // Generate a new ID if creating a new group
-      const groupToSave = {
-        ...formData,
-        id: formData.id || Date.now()
-      };
-      
-      // Simulate API call delay
-      setTimeout(() => {
-        onSave(groupToSave);
+      try {
+        // Generate a new ID if creating a new group
+        const groupToSave = {
+          ...formData,
+          id: formData.id || `group_${Date.now()}`,
+          leader: {
+            id: formData.leader.id,
+            name: formData.leader.name,
+            email: formData.leader.email
+          },
+          members: formData.members.map(member => ({
+            id: member.id,
+            name: member.name,
+            email: member.email
+          }))
+        };
+        
+        await onSave(groupToSave);
+      } catch (error) {
+        console.error('Error saving group:', error);
+        setErrors({
+          submit: 'Failed to save group. Please try again.'
+        });
+      } finally {
         setIsSubmitting(false);
-      }, 500);
+      }
     }
   };
 
@@ -385,12 +407,12 @@ const SmallGroupForm = ({ group, onSave, onCancel }) => {
                         errors.leaderName ? 'border-red-500' : 'border-gray-300'
                       }`}
                       placeholder="Enter leader name"
-                      onFocus={() => setShowMemberSearch(true)}
+                      onFocus={() => setShowLeaderSearch(true)}
                     />
                     {errors.leaderName && <p className="mt-1 text-sm text-red-600">{errors.leaderName}</p>}
                     
                     {/* Member search dropdown for leader */}
-                    {showMemberSearch && (
+                    {showLeaderSearch && (
                       <div className="absolute z-10 mt-1 w-full bg-white shadow-lg rounded-md border border-gray-300 max-h-60 overflow-y-auto">
                         <div className="p-2 border-b">
                           <input
@@ -425,6 +447,18 @@ const SmallGroupForm = ({ group, onSave, onCancel }) => {
                             <li className="px-3 py-2 text-gray-500">No members found</li>
                           )}
                         </ul>
+                        <div className="p-2 border-t bg-gray-50 flex justify-end">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setShowLeaderSearch(false);
+                              setMemberSearchQuery('');
+                            }}
+                            className="px-3 py-1 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 text-sm"
+                          >
+                            Close
+                          </button>
+                        </div>
                       </div>
                     )}
                   </div>
@@ -485,7 +519,7 @@ const SmallGroupForm = ({ group, onSave, onCancel }) => {
                     </div>
                   </div>
                   <ul className="max-h-60 overflow-y-auto">
-                    {filteredAvailableMembers.slice(0, 10).map(member => (
+                    {filteredAvailableMembers.map(member => (
                       <li 
                         key={member.id}
                         className="px-3 py-2 hover:bg-blue-50 cursor-pointer flex items-center justify-between border-b last:border-b-0"
@@ -580,6 +614,11 @@ const SmallGroupForm = ({ group, onSave, onCancel }) => {
           
           {/* Form Actions */}
           <div className="flex justify-end space-x-3 mt-6 pt-4 border-t">
+            {errors.submit && (
+              <div className="flex-grow text-red-600 text-sm">
+                {errors.submit}
+              </div>
+            )}
             <button
               type="button"
               onClick={onCancel}
