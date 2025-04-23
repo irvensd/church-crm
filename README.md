@@ -1,70 +1,152 @@
-# Getting Started with Create React App
+# Church CRM
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A modern Church Management System built with React, featuring member management, event scheduling, donation tracking, and pastoral care tools.
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+- Member Management
+- Event Scheduling
+- Donation Tracking
+- Pastoral Care
+- Family Relationships
+- Skills Inventory
+- QR Code Attendance
+- Birthday Notifications
+- Follow-up Workflow
 
-### `npm start`
+## Getting Started
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### Prerequisites
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- Node.js (v16.x or v18.x)
+- npm or yarn
 
-### `npm test`
+### Installation
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+1. Clone the repository:
+```bash
+git clone https://github.com/yourusername/church-crm.git
+cd church-crm
+```
 
-### `npm run build`
+2. Install dependencies:
+```bash
+npm install
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+3. Create a `.env` file in the root directory and add necessary environment variables:
+```bash
+REACT_APP_API_URL=http://localhost:3001
+REACT_APP_STORAGE_KEY=church_crm_storage
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+4. Start the development server:
+```bash
+npm start
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Testing
 
-### `npm run eject`
+The project includes a comprehensive testing suite:
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### Unit Tests
+```bash
+# Run unit tests
+npm test
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+# Run tests in watch mode
+npm run test:watch
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+# Generate coverage report
+npm run test:coverage
+```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+### Integration Tests
+```bash
+# Run integration tests
+npm run test:integration
+```
 
-## Learn More
+### E2E Tests
+```bash
+# Run Cypress tests in headless mode
+npm run test:e2e
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+# Open Cypress Test Runner
+npm run test:e2e:open
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### Accessibility Tests
+```bash
+# Run accessibility tests
+npm run test:a11y
+```
 
-### Code Splitting
+## Development
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+### Code Style
 
-### Analyzing the Bundle Size
+The project uses ESLint and Prettier for code formatting. Run linting:
+```bash
+npm run lint
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+### Git Workflow
 
-### Making a Progressive Web App
+1. Create a new branch for your feature:
+```bash
+git checkout -b feature/your-feature-name
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+2. Make your changes and commit:
+```bash
+git add .
+git commit -m "feat: your feature description"
+```
 
-### Advanced Configuration
+3. Push your changes:
+```bash
+git push origin feature/your-feature-name
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+4. Create a Pull Request on GitHub
 
-### Deployment
+### CI/CD
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+The project uses GitHub Actions for continuous integration and deployment:
 
-### `npm run build` fails to minify
+- Unit tests run on every push and pull request
+- E2E tests run on pull requests to main/develop branches
+- Accessibility tests ensure WCAG 2.0 Level AA compliance
+- Code coverage reports are uploaded to Codecov
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## Project Structure
+
+```
+church-crm/
+├── src/
+│   ├── components/      # React components
+│   ├── contexts/        # React contexts
+│   ├── hooks/          # Custom hooks
+│   ├── pages/          # Page components
+│   ├── services/       # API services
+│   └── utils/          # Utility functions
+├── cypress/
+│   ├── e2e/           # E2E tests
+│   └── support/       # Cypress support files
+├── .github/
+│   └── workflows/     # GitHub Actions
+└── package.json
+```
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
